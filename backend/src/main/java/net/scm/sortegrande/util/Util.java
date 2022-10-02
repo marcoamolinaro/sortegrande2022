@@ -3,11 +3,14 @@ package net.scm.sortegrande.util;
 import net.scm.sortegrande.dto.RateioPremioDTO;
 import net.scm.sortegrande.dto.ResultadoCaixaDTO;
 import com.jayway.jsonpath.JsonPath;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
 public class Util {
+
     public static ResultadoCaixaDTO convertToResultado(String resultado) {
         ResultadoCaixaDTO resultadoCaixaDTO = new ResultadoCaixaDTO();
 
@@ -25,12 +28,14 @@ public class Util {
 
         Integer rateio = JsonPath.read(resultado, "$.data.prizes.length()");
 
+        /*
         System.out.println("Data do Concurso: " + dataConcurso);
         System.out.println("Num. do Concurso: " + concurso);
         System.out.println("Dezenas         : " + dezenas.toString());
         System.out.println("Tem Vencedor    : " + temVencedor);
         System.out.println("Rateio          : " + rateioPremio.toString());
         System.out.println("Num. Rateios    : " + rateio);
+         */
 
         Set<RateioPremioDTO> rateioPremioDTOS = new HashSet<>();
 
@@ -38,11 +43,8 @@ public class Util {
             RateioPremioDTO rateioPremioDTO = new RateioPremioDTO();
 
             String acertos = JsonPath.read(resultado, "$.data.prizes[" + i + "].name");
-            System.out.println("Acertos      : " + acertos);
             Double valor = JsonPath.read(resultado, "$.data.prizes[" + i + "].prize");
-            System.out.println("Valor        : " + valor);
             Integer numDeVencedor = JsonPath.read(resultado, "$.data.prizes[" + i + "].winners");
-            System.out.println("Vencedores   : " + numDeVencedor);
 
             rateioPremioDTO.setValorPremio(valor);
             rateioPremioDTO.setDescricaoFaixa(acertos);
@@ -55,4 +57,17 @@ public class Util {
 
         return resultadoCaixaDTO;
     }
+
+    public static String getResultado(String concurso, String url, String token, String loteria, String tipo) {
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        String uri = url + concurso + token;
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put(loteria, tipo);
+
+        return Objects.requireNonNull(restTemplate.getForObject(uri, String.class, params));
+    }
 }
+

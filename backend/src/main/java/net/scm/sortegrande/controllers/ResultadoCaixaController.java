@@ -8,7 +8,9 @@ import net.scm.sortegrande.dto.RateioPremioDTO;
 import net.scm.sortegrande.dto.ResultadoCaixaDTO;
 import net.scm.sortegrande.util.Util;
 import org.json.JSONArray;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParser;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,21 +23,24 @@ import java.util.*;
 @RequestMapping(value = "/resultados")
 public class ResultadoCaixaController {
 
+    @Autowired
+    private Environment env;
+
     @GetMapping
     public ResponseEntity<ResultadoCaixaDTO> getResultadoCaixa() {
-        RestTemplate restTemplate = new RestTemplate();
 
-        String loteria = "lotofacil";
+        String url_resultados = env.getProperty("user.url_resultados");
+        String token = env.getProperty("user.url_token");
+        String loteria = env.getProperty("user.loteria");
+        String tipo_loteria = env.getProperty("user.tipo_loteria");
 
-        String uri = "https://www.lotodicas.com.br/api/v2/lotofacil/results/last?token=9107f866eb008e1a8df6b06f6f935582787a357a39d3606ef1ac7d63d1d0a642";
+        String resultado = Util.getResultado("last", url_resultados, token, loteria, tipo_loteria);
 
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("loteria", loteria);
-
-        String resultado = Objects.requireNonNull(restTemplate.getForObject(uri, String.class, params));
-
-        ResultadoCaixaDTO resultadoCaixaDTO = Util.convertToResultado(resultado);
+        ResultadoCaixaDTO resultadoCaixaDTO =
+                Util.convertToResultado(resultado);
 
         return ResponseEntity.ok().body(resultadoCaixaDTO);
     }
+
+
 }
