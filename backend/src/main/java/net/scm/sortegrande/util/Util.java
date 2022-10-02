@@ -28,15 +28,6 @@ public class Util {
 
         Integer rateio = JsonPath.read(resultado, "$.data.prizes.length()");
 
-        /*
-        System.out.println("Data do Concurso: " + dataConcurso);
-        System.out.println("Num. do Concurso: " + concurso);
-        System.out.println("Dezenas         : " + dezenas.toString());
-        System.out.println("Tem Vencedor    : " + temVencedor);
-        System.out.println("Rateio          : " + rateioPremio.toString());
-        System.out.println("Num. Rateios    : " + rateio);
-         */
-
         Set<RateioPremioDTO> rateioPremioDTOS = new HashSet<>();
 
         for (int i=0; i < rateio; i++) {
